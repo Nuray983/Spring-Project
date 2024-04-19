@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Services</title>
+</head>
+<body>
+
+<h1>Combined Services</h1>
+
+<!-- Форма для отправки числа во второй сервис -->
+<form action="/service1/send-to-service2" method="post">
+    <label for="numberToSend">Enter a number to send to Service2:</label>
+    <input type="text" id="numberToSend" name="number" required>
+    <button type="submit">Send to Service2</button>
+</form>
+
+<!-- Результаты от второго сервиса -->
+<br>
+<div th:text="${processedNumber}"></div>
+<div th:text="${responseFromService2}"></div>
+
+<!-- Форма для отправки ответа первому сервису -->
+<br>
+<form action="/service2/send-response" method="get">
+    <button type="submit">Send Response to Service1</button>
+</form>
+
+<!-- Результаты от первого сервиса -->
+<br>
+<div th:text="${responseToService1}"></div>
+
+</body>
+</html>
