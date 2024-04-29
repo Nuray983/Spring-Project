@@ -18,7 +18,6 @@ public class GroupController implements GroupsApi {
     private final GroupService groupService;
     private final GroupMapper groupMapper;
 
-//    @PostMapping("/create")
     @Override
     public ResponseEntity<GroupDTO> createGroup(GroupDTO groupDTO) {
         Group group = groupMapper.toModel(groupDTO);
@@ -26,14 +25,13 @@ public class GroupController implements GroupsApi {
         return ResponseEntity.ok(groupDTO);
     }
 
-//    @GetMapping("/allGroups")
-@Override
-public ResponseEntity<List<GroupDTO>> getAllGroups() {
-    List<GroupDTO> groupDTO = groupService.getAllGroups();
-    return ResponseEntity.ok().body(groupDTO);
-}
 
-    //    @GetMapping("/groupDetail/{id}")
+    @Override
+    public ResponseEntity<List<GroupDTO>> getAllGroups() {
+        List<GroupDTO> groupDTO = groupService.getAllGroups();
+        return ResponseEntity.ok().body(groupDTO);
+    }
+
     @Override
     public ResponseEntity<GroupDTO> groupDetail(Long id){
         Group group = groupService.getGroupById(id);
@@ -41,14 +39,12 @@ public ResponseEntity<List<GroupDTO>> getAllGroups() {
         return ResponseEntity.ok().body(groupDTO);
     }
 
-//    @PostMapping("/deleteGroup/{id}")
     @Override
     public ResponseEntity<Void> deleteGroup(Long id){
         groupService.deleteGroupById(id);
         return ResponseEntity.noContent().build();
     }
 
-//    @PutMapping("/updateGroup/{id}")
    @Override
     public ResponseEntity<GroupDTO> updateGroup(Long id, GroupDTO groupDTO){
             Group group = groupMapper.toModel(groupDTO);
