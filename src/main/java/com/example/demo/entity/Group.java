@@ -24,7 +24,7 @@ public class Group implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "group_name")
+    @Column(name = "groupName")
     private String groupName;
 
     @Column(name = "quantity")

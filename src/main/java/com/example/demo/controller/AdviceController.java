@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.persistence.EntityNotFoundException;
 
-@RestControllerAdvice(assignableTypes = {GroupController.class, StudentController.class})
+@RestControllerAdvice(assignableTypes = {AdviceController.class, GroupController.class, StudentController.class})
 public class AdviceController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)

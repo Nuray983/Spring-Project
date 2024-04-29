@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Group;
+import com.example.demo.error.BadRequestException;
 import org.openapitools.model.GroupDTO;
 
 import java.util.List;
