@@ -22,10 +22,10 @@ public class Student {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "studentName")
+    @Column(name = "student_name")
     private String studentName;
 
-    @Column(name = "studentSurname")
+    @Column(name = "student_surname")
     private String studentSurname;
 
     @Column(name = "phone")
@@ -35,6 +35,6 @@ public class Student {
     private int age;
 
     @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "groupNumber")
+    @JoinColumn(name = "group_number")
     private Group group;
 }
