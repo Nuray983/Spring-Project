@@ -242,5 +242,12 @@ components:
           type: integer
         age:
           type: integer
-        groupDTO:
-          $ref: '#/components/schemas/GroupDTO'
+        groupId:
+          $ref: '#/components/schemas/GroupShortInfoDTO'
+    GroupShortInfoDTO:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            description: The ID of the group

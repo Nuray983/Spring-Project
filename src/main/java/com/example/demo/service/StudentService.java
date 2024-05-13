@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Student;
-import com.example.demo.error.BadRequestException;
 import org.openapitools.model.StudentDTO;
 
 import java.util.List;

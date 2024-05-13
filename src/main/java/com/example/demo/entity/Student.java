@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,7 +36,7 @@ public class Student {
     @Column(name = "age")
     private int age;
 
-    @ManyToOne( cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_number")
-    private Group group;
+    @ManyToMany(mappedBy = "studentsList", cascade = { CascadeType.ALL}, fetch = FetchType.EAGER)
+    private List<Group> groups = new ArrayList<>();
+
 }

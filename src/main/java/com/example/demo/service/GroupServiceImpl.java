@@ -1,24 +1,29 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Group;
-import com.example.demo.mapper.GroupMapper;
+import com.example.demo.entity.Student;
 import com.example.demo.repository.GroupRepository;
+import com.example.demo.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
-import org.openapitools.model.GroupDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
-    private final GroupMapper groupMapper;
+
+    private final StudentRepository studentRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(SchedulerServiceImpl.class);
 
     @Override
     @Transactional
@@ -31,28 +36,23 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GroupDTO> getAllGroups(){
+    public List<Group> getAllGroups(){
         try {
-            List<Group> groups = groupRepository.findAll();
-            return groups.stream()
-                    // todo use mapper instead local method(use Mapstruct library)
-                    .map(groupMapper::toDTO)
-                    .collect(Collectors.toList());
+            return groupRepository.findAll();
         }
-            catch (Exception e) {
-                throw new RuntimeException("Error occurred while fetching groups", e);
-            }
+        catch (Exception e) {
+            throw new RuntimeException("Error occurred while fetching groups", e);
         }
-
+    }
 
     @Override
     @Transactional(readOnly = true)
     public Group getGroupById(Long id){
         if(id == null){
             throw new IllegalArgumentException("Group id cannot be null");
+        }else {
+            return groupRepository.findById(id).orElse(null);
         }
-        return groupRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Group with id " + id + " not found"));
     }
 
     @Override
@@ -80,5 +80,24 @@ public class GroupServiceImpl implements GroupService {
         }
         groupRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public void deleteStudentFromGroup(Long studentId, Long groupId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student with id " + studentId + " not found"));
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group with id " + groupId + " not found"));
+
+        if (student.getGroups().contains(group)) {
+            student.getGroups().remove(group);
+            group.getStudentsList().remove(student);
+            logger.info("Student with id {} removed from group with id {}", studentId, groupId);
+        } else {
+            logger.warn("Student with id {} is not in group with id {}", studentId, groupId);
+        }
+    }
+
 }
 
