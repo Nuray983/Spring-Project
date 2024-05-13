@@ -3,13 +3,15 @@ package com.example.demo.service;
 import com.example.demo.entity.Group;
 import com.example.demo.entity.Student;
 import com.example.demo.mapper.StudentMapper;
-import com.example.demo.repository.GroupRepository;
 import com.example.demo.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.openapitools.model.StudentDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,10 +21,15 @@ import java.util.stream.Collectors;
 public class StudentServiceImpl implements StudentService{
     // to private final
     private final StudentRepository studentRepository;
-    private final GroupRepository groupRepository;
+
     private final StudentMapper studentMapper;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+
     @Override
+    @Transactional
     public void addStudent(Student student) {
         if (student == null) {
             throw new IllegalArgumentException("Student cannot be null");
@@ -42,9 +49,6 @@ public class StudentServiceImpl implements StudentService{
         }
     }
 
-
-// TODO to mapper
-
     @Override
     public Student getStudentById(Long id) {
         if (id == null) {
@@ -59,30 +63,25 @@ public class StudentServiceImpl implements StudentService{
         Optional<Student> optionalExistingStudent = studentRepository.findById(id);
         if (optionalExistingStudent.isPresent()) {
             Student existingStudent = optionalExistingStudent.get();
-            if (student.getGroup() != null && student.getGroup().getId() != null) {
-                Optional<Group> optionalGroup = groupRepository.findById(student.getGroup().getId());
-                if (optionalGroup.isPresent()) {
-                    existingStudent.setGroup(optionalGroup.get());
-                } else {
-                    throw new EntityNotFoundException("Group with id " + student.getGroup().getId() + " not found");
-                }
-            } else {
-                studentMapper.update(existingStudent, student);
-                studentRepository.save(existingStudent);
+            if (student.getGroups() != null) {
+                existingStudent.setGroups(student.getGroups());
             }
+            studentMapper.update(existingStudent, student);
+            studentRepository.save(existingStudent);
         } else {
             throw new EntityNotFoundException("Student with id " + id + " not found");
         }
     }
 
     @Override
+    @Transactional
     public void deleteStudent(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Student id cannot be null");
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Student with id " + id + " not found"));
+        for (Group group : student.getGroups()) {
+            group.getStudentsList().remove(student);
         }
-        if (!studentRepository.existsById(id)) {
-            throw new EntityNotFoundException("Student with id " + id + " not found");
-        }
+        student.getGroups().clear();
         studentRepository.deleteById(id);
     }
 }

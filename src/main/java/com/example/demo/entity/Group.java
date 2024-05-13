@@ -30,6 +30,11 @@ public class Group implements Serializable {
     @Column(name = "quantity")
     private int quantity;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "grouppa_students_list",
+            joinColumns = { @JoinColumn(name = "group_id") },
+            inverseJoinColumns = { @JoinColumn(name = "student_id") }
+    )
     private List<Student> studentsList = new ArrayList<>();
 }

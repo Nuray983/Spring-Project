@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,11 +26,13 @@ public class GroupController implements GroupsApi {
         return ResponseEntity.ok(groupDTO);
     }
 
-
     @Override
     public ResponseEntity<List<GroupDTO>> getAllGroups() {
-        List<GroupDTO> groupDTO = groupService.getAllGroups();
-        return ResponseEntity.ok().body(groupDTO);
+        List<Group> groups = groupService.getAllGroups();
+        List<GroupDTO> groupDTOs = groups.stream()
+                .map(groupMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(groupDTOs);
     }
 
     @Override

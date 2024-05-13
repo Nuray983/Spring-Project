@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-// todo implement openapi generator
 public class StudentController implements StudentsApi {
 
     private final StudentService studentService;
@@ -25,45 +24,44 @@ public class StudentController implements StudentsApi {
     private final GroupMapper groupMapper;
     // to RequiredArgsConstructor
 
-//    @GetMapping("/students")
     @Override
     public ResponseEntity<List<StudentDTO>> getAllStudents() {
         List<StudentDTO> students = studentService.getAllStudents();
         return ResponseEntity.ok(students);
     }
 
-//    @PostMapping("/add")
-@Override
-public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
-    if (studentDTO.getGroupDTO() == null) {
-        return ResponseEntity.badRequest().body(null);
-    }
-    Group group = groupMapper.toModel(studentDTO.getGroupDTO());
-    Student student = studentMapper.toModel(studentDTO);
-    Group existingGroup = groupService.getGroupById(group.getId());
-    if (existingGroup == null) {
-        groupService.createGroup(group);
-    }
-    student.setGroup(group);
-    studentService.addStudent(student);
-    return ResponseEntity.ok(studentDTO);
-}
+    @Override
+    public ResponseEntity<StudentDTO> addStudent(StudentDTO studentDTO) {
+        if (studentDTO.getGroupId() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Group group = groupMapper.toGetId(studentDTO.getGroupId());
+        Student student = studentMapper.toModel(studentDTO);
 
-    //    @PostMapping("/delete/{id}")
+        Group existingGroup = groupService.getGroupById(group.getId());
+        if (existingGroup == null) {
+            groupService.createGroup(group);
+        } else {
+            group = existingGroup;
+        }
+        student.setGroups(List.of(group));
+        group.getStudentsList().add(student);
+        studentService.addStudent(student);
+        return ResponseEntity.ok(studentDTO);
+    }
+
     @Override
     public ResponseEntity<Void> deleteStudent(Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/details/{id}")
     @Override
     public ResponseEntity<StudentDTO> detailStudent(Long id) {
         StudentDTO studentDTO = studentMapper.toDTO(studentService.getStudentById(id));
         return ResponseEntity.ok(studentDTO);
     }
 
-//    @PutMapping("/update/{id}")
     @Override
     public ResponseEntity<StudentDTO> updateStudent(Long id, StudentDTO studentDTO){
             studentService.updateStudents(studentDTO.getId(), studentMapper.toModel(studentDTO));
