@@ -63,8 +63,8 @@ public class StudentController implements StudentsApi {
     }
 
     @Override
-    public ResponseEntity<StudentDTO> updateStudent(Long id, StudentDTO studentDTO){
-            studentService.updateStudents(studentDTO.getId(), studentMapper.toModel(studentDTO));
-            return ResponseEntity.ok(studentDTO);
+    public ResponseEntity<StudentDTO> updateStudent(Long id, StudentDTO studentDTO) {
+        studentService.updateStudents(id, studentDTO);
+        return ResponseEntity.ok(studentDTO);
     }
 }

@@ -6,6 +6,7 @@ import com.example.demo.mapper.StudentMapper;
 import com.example.demo.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.openapitools.model.StudentDTO;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,18 +59,13 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public void updateStudents(Long id, Student student) {
-        Optional<Student> optionalExistingStudent = studentRepository.findById(id);
-        if (optionalExistingStudent.isPresent()) {
-            Student existingStudent = optionalExistingStudent.get();
-            if (student.getGroups() != null) {
-                existingStudent.setGroups(student.getGroups());
-            }
-            studentMapper.update(existingStudent, student);
+    public void updateStudents(Long id, StudentDTO studentDTO) {
+        studentRepository.findById(id).ifPresentOrElse(existingStudent -> {
+            studentMapper.update(existingStudent, studentMapper.toModel(studentDTO));
             studentRepository.save(existingStudent);
-        } else {
+        }, () -> {
             throw new EntityNotFoundException("Student with id " + id + " not found");
-        }
+        });
     }
 
     @Override
